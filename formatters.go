@@ -1,4 +1,4 @@
-package grid
+package grider
 
 import (
 	"bytes"
@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"time"
 
-	"bitbucket.org/elephantsoft/rdk/type/date"
+	"github.com/axkit/date"
 	"gopkg.in/guregu/null.v3"
 )
 

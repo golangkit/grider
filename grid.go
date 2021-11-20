@@ -1,12 +1,9 @@
-package grid
+package grider
 
 import (
 	"encoding/json"
 	"fmt"
 	"strings"
-
-	"github.com/axkit/flogger"
-	"github.com/rs/zerolog"
 )
 
 // FieldTagLabel holds struct field tag key.
@@ -15,19 +12,19 @@ var FieldTagLabel = "grid"
 // GridColumn describes grid column's properties.
 type GridColumn struct {
 	Name       string `json:"name"`
-	Hidden     bool   `json:"hidden,omitempty"`
-	Sortable   bool   `json:"sortable,omitempty"`
-	Filterable bool   `json:"filterable,omitempty"`
-	Title      string `json:"title,omitempty"`
-	Perm       string `json:"perm,omitempty"`
-	Type       string `json:"type,omitempty"`
-	Href       string `json:"href,omitempty"`
-	Align      string `json:"align,omitempty"`
-	Caption    string `json:"caption,omitempty"`
-	Method     string `json:"method,omitempty"`
-	Icons      string `json:"icons,omitempty"`
-	IconsAlign string `json:"ialign,omitempty"`
-	Target     string `json:"target,omitempty"` // target for opening link
+	Hidden     bool   `json:"hidden,omitempty"`     // default false
+	Sortable   bool   `json:"sortable,omitempty"`   // default false
+	Filterable bool   `json:"filterable,omitempty"` // default false
+	Title      string `json:"title,omitempty"`      // default ""
+	Perm       string `json:"perm,omitempty"`       // default not permission
+	Type       string `json:"type,omitempty"`       // default "" (regular text)
+	Href       string `json:"href,omitempty"`       // default "" (no link)
+	Align      string `json:"align,omitempty"`      // default "" ("left") cell align
+	Caption    string `json:"caption,omitempty"`    // default ""
+	Method     string `json:"method,omitempty"`     // ?
+	Icons      string `json:"icons,omitempty"`      // comma separated fa-* icon names
+	IconsAlign string `json:"ialign,omitempty"`     // default "" ("left") "right" - after text
+	Target     string `json:"target,omitempty"`     // default "" browser window target for opening link
 }
 
 type Grid struct {
@@ -35,8 +32,7 @@ type Grid struct {
 	Rows           [][]string    `json:"rows"`
 	Objects        []interface{} `json:"objects,omitempty"`
 	IsDownloadable bool          `json:"isDownloadable"`
-	titlePrefix    string
-	log            flogger.FuncLogger
+	option         Option
 }
 
 type DownloadResponse struct {
@@ -45,13 +41,29 @@ type DownloadResponse struct {
 	Content     string // base64
 }
 
-func New(titlePrefix string) *Grid {
-	return &Grid{titlePrefix: titlePrefix}
+type Option struct {
+	titlePrefix    string
+	isDownloadable bool
 }
 
-func (g *Grid) Logger(l *zerolog.Logger) *Grid {
-	g.log = flogger.New(l, "grid", g.titlePrefix)
-	return g
+func WitTitlePrefix(prefix string) func(*Option) {
+	return func(s *Option) {
+		s.titlePrefix = prefix
+	}
+}
+
+func WithDownloadOption(b bool) func(*Option) {
+	return func(s *Option) {
+		s.isDownloadable = b
+	}
+}
+
+func New(opts ...func(*Option)) *Grid {
+	g := Grid{}
+	for _, f := range opts {
+		f(&g.option)
+	}
+	return &g
 }
 
 // DeleteColumns deletes columns with exact names in cols.

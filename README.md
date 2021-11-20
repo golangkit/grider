@@ -1,2 +1,4 @@
 # grider
-Backend part of table data presentation 
+Backend part of the web table view
+
+

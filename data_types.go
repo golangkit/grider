@@ -1,11 +1,11 @@
-package ui
+package grider
 
 import (
 	"fmt"
 	"strconv"
 	"time"
 
-	"bitbucket.org/elephantsoft/rdk/type/date"
+	"github.com/axkit/date"
 	"gopkg.in/guregu/null.v3"
 )
 

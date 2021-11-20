@@ -1,4 +1,4 @@
-package grid
+package grider
 
 import (
 	"reflect"
@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-// ApllySliceOfStruct converts slice of any struct to Grid,
-// slice of columnn and rows.
+// ApplySliceOfStruct converts slice of any struct to Grid,
+// slice of column and rows.
 func (g *Grid) ApplySliceOfStruct(src interface{}) *Grid {
 
 	s := reflect.ValueOf(src)

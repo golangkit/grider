@@ -27,11 +27,17 @@ type GridColumn struct {
 	Target     string `json:"target,omitempty"`     // default "" browser window target for opening link
 }
 
+type Action struct {
+	Code string
+	Perm string
+}
+
 type Grid struct {
 	Columns        []GridColumn  `json:"columns"`
 	Rows           [][]string    `json:"rows"`
 	Objects        []interface{} `json:"objects,omitempty"`
 	IsDownloadable bool          `json:"isDownloadable"`
+	Actions        [][]Action    `json:"actions,omitempty"`
 	option         Option
 }
 
@@ -44,6 +50,7 @@ type DownloadResponse struct {
 type Option struct {
 	titlePrefix    string
 	isDownloadable bool
+	multiLang      bool
 }
 
 func WitTitlePrefix(prefix string) func(*Option) {
@@ -55,6 +62,12 @@ func WitTitlePrefix(prefix string) func(*Option) {
 func WithDownloadOption(b bool) func(*Option) {
 	return func(s *Option) {
 		s.isDownloadable = b
+	}
+}
+
+func WithI18n() func(*Option) {
+	return func(s *Option) {
+		s.multiLang = true
 	}
 }
 

@@ -1,6 +1,7 @@
 package grider
 
 import (
+	"fmt"
 	"reflect"
 	"regexp"
 	"strings"
@@ -18,17 +19,18 @@ func (g *Grid) ApplySliceOfStruct(src interface{}) *Grid {
 	}
 
 	if s.Len() == 0 {
+		fmt.Println("s.Len()=0")
 		// if src empty we have to create empty slice element.
 		// and generate values for Columns attribute.
-		g.Columns = extractMeta(g.option.titlePrefix, "", reflect.Zero(t.Elem()))
+		g.Columns = extractMeta(g.option.titlePrefix, "", reflect.Zero(t.Elem()), g.option.multiLang)
 		return g
 	}
 
-	//	fmt.Printf("s.Len()=%d\n", s.Len())
+	fmt.Printf("s.Len()=%d\n", s.Len())
 	for i := 0; i < s.Len(); i++ {
 		row := s.Index(i)
 		if i == 0 {
-			g.Columns = extractMeta(g.option.titlePrefix, "", row)
+			g.Columns = extractMeta(g.option.titlePrefix, "", row, g.option.multiLang)
 		}
 		g.Rows = append(g.Rows, convertStructValues(row))
 		//	fmt.Printf("dst=%v\n", res.Rows)
@@ -81,10 +83,12 @@ func convertStructValues(s reflect.Value) []string {
 			if tf.Type.Kind() != reflect.Ptr {
 				res = append(res, convertStructValues(sf)...)
 			} else {
-				if sf.IsNil() {
+				if sf.IsNil() && sf.Kind() == reflect.Struct {
 					sf = reflect.New(tf.Type.Elem())
+					res = append(res, convertStructValues(sf)...)
+				} else {
+					res = append(res, "")
 				}
-				res = append(res, convertStructValues(sf)...)
 			}
 			continue
 		}
@@ -184,7 +188,7 @@ func addPrefixToColumn(s, substr string) string {
 	return s
 }
 
-func extractMeta(titlePrefix string, parentAttribute string, s reflect.Value) []GridColumn {
+func extractMeta(titlePrefix string, parentAttribute string, s reflect.Value, multiLang bool) []GridColumn {
 
 	var res []GridColumn
 
@@ -192,7 +196,7 @@ func extractMeta(titlePrefix string, parentAttribute string, s reflect.Value) []
 	t := s.Type()
 
 	if t.Kind() != reflect.Struct {
-		panic("extractMeta's parameter expected to be a struct")
+		panic("extractMeta's parameter expected to be a struct:" + parentAttribute)
 	}
 
 	for i := 0; i < t.NumField(); i++ {
@@ -218,13 +222,17 @@ func extractMeta(titlePrefix string, parentAttribute string, s reflect.Value) []
 			//fmt.Println("struct with no type")
 			var gc []GridColumn
 			if tf.Type.Kind() != reflect.Ptr {
-				gc = extractMeta(titlePrefix, snakeName, sf)
+				gc = extractMeta(titlePrefix, snakeName, sf, multiLang)
 			} else {
 				if sf.IsNil() {
-					mock := reflect.New(tf.Type.Elem())
-					gc = extractMeta(titlePrefix, snakeName, mock)
+					if tf.Type.Kind() == reflect.Struct {
+						mock := reflect.New(tf.Type.Elem())
+						gc = extractMeta(titlePrefix, snakeName, mock, multiLang)
+					} else {
+						res = append(res, convertTagToGridColumn(titlePrefix, parentAttribute, snakeName, tag, multiLang))
+					}
 				} else {
-					gc = extractMeta(titlePrefix, snakeName, sf)
+					gc = extractMeta(titlePrefix, snakeName, sf, multiLang)
 				}
 			}
 			//fmt.Printf("anonym: %v\n", h)
@@ -233,7 +241,8 @@ func extractMeta(titlePrefix string, parentAttribute string, s reflect.Value) []
 				continue
 			}
 		} else {
-			res = append(res, convertTagToGridColumn(titlePrefix, parentAttribute, snakeName, tag))
+			println("bala", sf.String())
+			res = append(res, convertTagToGridColumn(titlePrefix, parentAttribute, snakeName, tag, multiLang))
 			continue
 		}
 
@@ -247,10 +256,14 @@ func joinAttributeNames(parentAttribute, attribute string) string {
 	return parentAttribute + attribute
 }
 
-func convertTagToGridColumn(titlePrefix string, parentAttribute, attribute string, tag string) GridColumn {
+func convertTagToGridColumn(titlePrefix string, parentAttribute, attribute string, tag string, multiLang bool) GridColumn {
 
 	var res = GridColumn{Name: joinAttributeNames(parentAttribute, attribute)}
-	res.Title = "%" + titlePrefix + res.Name + "%"
+	if multiLang {
+		res.Title = "%" + titlePrefix + res.Name + "%"
+	} else {
+		res.Title = titlePrefix + res.Name
+	}
 
 	if tag == "" {
 		return res

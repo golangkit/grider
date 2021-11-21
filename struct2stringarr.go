@@ -20,7 +20,7 @@ func (g *Grid) ApplySliceOfStruct(src interface{}) *Grid {
 	if s.Len() == 0 {
 		// if src empty we have to create empty slice element.
 		// and generate values for Columns attribute.
-		g.Columns = extractMeta(g.titlePrefix, "", reflect.Zero(t.Elem()))
+		g.Columns = extractMeta(g.option.titlePrefix, "", reflect.Zero(t.Elem()))
 		return g
 	}
 
@@ -28,7 +28,7 @@ func (g *Grid) ApplySliceOfStruct(src interface{}) *Grid {
 	for i := 0; i < s.Len(); i++ {
 		row := s.Index(i)
 		if i == 0 {
-			g.Columns = extractMeta(g.titlePrefix, "", row)
+			g.Columns = extractMeta(g.option.titlePrefix, "", row)
 		}
 		g.Rows = append(g.Rows, convertStructValues(row))
 		//	fmt.Printf("dst=%v\n", res.Rows)

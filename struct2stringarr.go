@@ -39,7 +39,7 @@ func (g *Grid) ApplySliceOfStruct(src interface{}) *Grid {
 		//fmt.Printf("ofunc=%#v\n", ofunc)
 		if ofunc.IsValid() && !ofunc.IsZero() {
 			obj := ofunc.Call([]reflect.Value{})
-			g.Objects = append(g.Objects, obj[0].Interface())
+			g.RowObjects = append(g.RowObjects, obj[0].Interface())
 		}
 
 		// aif := row.Addr().MethodByName("Icon")
@@ -188,9 +188,9 @@ func addPrefixToColumn(s, substr string) string {
 	return s
 }
 
-func extractMeta(titlePrefix string, parentAttribute string, s reflect.Value, multiLang bool) []GridColumn {
+func extractMeta(titlePrefix string, parentAttribute string, s reflect.Value, multiLang bool) []Column {
 
-	var res []GridColumn
+	var res []Column
 
 	//s := reflect.ValueOf(model).Elem()
 	t := s.Type()
@@ -220,7 +220,7 @@ func extractMeta(titlePrefix string, parentAttribute string, s reflect.Value, mu
 
 		if tf.Type.Name() == "" || tf.Anonymous {
 			//fmt.Println("struct with no type")
-			var gc []GridColumn
+			var gc []Column
 			if tf.Type.Kind() != reflect.Ptr {
 				gc = extractMeta(titlePrefix, snakeName, sf, multiLang)
 			} else {
@@ -256,9 +256,9 @@ func joinAttributeNames(parentAttribute, attribute string) string {
 	return parentAttribute + attribute
 }
 
-func convertTagToGridColumn(titlePrefix string, parentAttribute, attribute string, tag string, multiLang bool) GridColumn {
+func convertTagToGridColumn(titlePrefix string, parentAttribute, attribute string, tag string, multiLang bool) Column {
 
-	var res = GridColumn{Name: joinAttributeNames(parentAttribute, attribute)}
+	var res = Column{Name: joinAttributeNames(parentAttribute, attribute)}
 	if multiLang {
 		res.Title = "%" + titlePrefix + res.Name + "%"
 	} else {

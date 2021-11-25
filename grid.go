@@ -9,8 +9,8 @@ import (
 // FieldTagLabel holds struct field tag key.
 var FieldTagLabel = "grid"
 
-// GridColumn describes grid column's properties.
-type GridColumn struct {
+// Column describes grid column's properties.
+type Column struct {
 	Name       string `json:"name"`
 	Hidden     bool   `json:"hidden,omitempty"`     // default false
 	Sortable   bool   `json:"sortable,omitempty"`   // default false
@@ -27,17 +27,15 @@ type GridColumn struct {
 	Target     string `json:"target,omitempty"`     // default "" browser window target for opening link
 }
 
-type Action struct {
-	Code string
-	Perm string
-}
-
+// Grid describes data and metadata for presenting grid.
 type Grid struct {
-	Columns        []GridColumn  `json:"columns"`
-	Rows           [][]string    `json:"rows"`
-	Objects        []interface{} `json:"objects,omitempty"`
-	IsDownloadable bool          `json:"isDownloadable"`
-	Actions        [][]Action    `json:"actions,omitempty"`
+	Columns        []Column       `json:"columns"`
+	Rows           [][]string     `json:"rows"`
+	RowObjects     []interface{}  `json:"rowObjects,omitempty"`
+	RowActions     [][]ActionCode `json:"rowActions,omitempty"`
+	GridActions    []ActionCode   `json:"gridActions,omitempty"`
+	Action         ActionSet      `json:"action,omitempty"`
+	IsDownloadable bool           `json:"isDownloadable"`
 	option         Option
 }
 

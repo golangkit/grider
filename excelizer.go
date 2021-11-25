@@ -21,7 +21,7 @@ func SetLinkPrefix(s string) {
 	linkPrefix = s
 }
 
-func getPlaceholders(gc []GridColumn) map[int][]placeholder {
+func getPlaceholders(gc []Column) map[int][]placeholder {
 	res := make(map[int][]placeholder)
 
 	for i := range gc {

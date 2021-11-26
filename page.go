@@ -18,13 +18,17 @@ type Page struct {
 
 	Action ActionSet `json:"action,omitempty"`
 
+	// PageActions holds actions available in the drop down list on the page level.
+	PageActions []ActionCode `json:"pageActions,omitempty"`
+
 	// Footer описывает содержимое нижней части окна.
 	//Footer *Footer `json:"footer,omitempty"`
 }
 
 // Tab описывает содержимое одного связанного объекта.
 type Tab struct {
-	Header *Header `json:"header,omitempty"`
+	Header     *Header      `json:"header,omitempty"`
+	TabActions []ActionCode `json:"tabActions,omitempty"`
 
 	Widgets []Widgeter `json:"widgets,omitempty"`
 
@@ -42,17 +46,37 @@ const (
 	ChartType     WidgetType = 4
 )
 
+func (wt WidgetType) String() string {
+	switch wt {
+	case AttrValueType:
+		return "attrval"
+	case MediaType:
+		return "media"
+	case MapType:
+		return "map"
+	case ChartType:
+		return "chart"
+	}
+	return ""
+}
+
+func (wt WidgetType) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + wt.String() + `"`), nil
+}
+
 type Widgeter interface {
 	WidgetType() WidgetType
 }
 
-type WidgetPos struct {
-	Row int `json:"row"`
-	Col int `json:"col"`
+type Widget struct {
+	Type    WidgetType   `json:"type"`
+	Row     int          `json:"row"`
+	Col     int          `json:"col"`
+	Buttons []ActionCode `json:"buttons,omitempty"`
 }
 
 type AttrValueWidget struct {
-	WidgetPos
+	Widget
 	Lines []Line `json:"lines,omitempty"`
 }
 
@@ -61,7 +85,7 @@ func (AttrValueWidget) WidgetType() WidgetType {
 }
 
 type MediaWidget struct {
-	WidgetPos
+	Widget
 	Media []Media `json:"media,omitempty"`
 }
 
@@ -71,7 +95,7 @@ func (MediaWidget) WidgetType() WidgetType {
 
 // Header describes header of the Page or Tab.
 type Header struct {
-	ID int `json:"id"`
+	ID int `json:"id,omitempty"`
 
 	// Icon параметры иконки отображемой в заголовке.
 	LeftIcons []Icon `json:"leftIcons,omitempty"`
@@ -88,7 +112,7 @@ type Header struct {
 	URL string `json:"url,omitempty"`
 
 	// BgColor содержит цвета фона заголовка в формате HTML: red, #fff или #fefefe.
-	BgColor string `bgColor,omitempty`
+	BgColor string `json:"bgColor,omitempty"`
 }
 
 // Icon describes fa-icon properties.

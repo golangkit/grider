@@ -78,7 +78,7 @@ type Widget struct {
 	// Row     int          `json:"row"`
 	// Col     int          `json:"col"`
 	Width   int          `json:"width"`
-	Buttons []ActionCode `json:"buttons,omitempty"`
+	Actions []ActionCode `json:"actions,omitempty"`
 }
 
 type AttrValueWidget struct {
@@ -155,8 +155,8 @@ type Line struct {
 	Suggestion *SuggestionType `json:"suggestion,omitempty"`
 
 	// URL заполняется при Type = href или exthref
-	URL     string   `json:"url,omitempty"`
-	Actions []Action `json:"actions,omitempty"`
+	URL     string       `json:"url,omitempty"`
+	Actions []ActionCode `json:"actions,omitempty"`
 }
 
 // LineType описывает поддерживаемые типы линий.
@@ -210,3 +210,28 @@ type SuggestionType struct {
 // type Footer struct {
 // 	Media []Media `json:"media,omitempty"`
 // }
+
+func (p *Page) AssignActionSet(as ActionSet) error {
+	p.Action = NewActionSet()
+	p.Action.Add(p.PageActions)
+	for i := range p.Widgets {
+		switch p.Widgets[i].WidgetType() {
+		case AttrValueType:
+			w := p.Widgets[i].(AttrValueWidget)
+			p.Action.Add(w.Actions)
+			for j := range w.Lines {
+				p.Action.Add(w.Lines[j].Actions)
+			}
+		case MediaType:
+			w := p.Widgets[i].(MediaWidget)
+			p.Action.Add(w.Actions)
+		case MapType:
+			break
+		case ChartType:
+			break
+		case CustomType:
+			break
+		}
+	}
+	return p.Action.AssignActionValues(as)
+}

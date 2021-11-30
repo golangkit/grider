@@ -32,6 +32,7 @@ type Grid struct {
 	Columns        []Column       `json:"columns"`
 	Rows           [][]string     `json:"rows"`
 	RowObjects     []interface{}  `json:"rowObjects,omitempty"`
+	RowIDs         []int          `json:"rowIds,omitempty"`
 	RowActions     [][]ActionCode `json:"rowActions,omitempty"`
 	GridActions    []ActionCode   `json:"gridActions,omitempty"`
 	Action         ActionSet      `json:"action,omitempty"`
@@ -159,4 +160,14 @@ func (g *Grid) ReplaceCellWithFullLinks() error {
 		}
 	}
 	return nil
+}
+
+func (g *Grid) AssignActionSet(as ActionSet) error {
+	g.Action = NewActionSet()
+	g.Action.Add(g.GridActions)
+	for i := range g.RowActions {
+		g.Action.Add(g.RowActions[i])
+	}
+
+	return g.Action.AssignActionValues(as)
 }

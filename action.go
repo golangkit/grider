@@ -1,11 +1,14 @@
 package grider
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"errors"
+)
 
 // Action describes an operation on UI user can invocate.
 // An action could relate to the specific row or not.
 type Action struct {
-	Code       ActionCode  `json:"code"`
+	Code       ActionCode  `json:"code,omitempty"`
 	Perm       string      `json:"perm,omitempty"`
 	Title      string      `json:"title,omitempty"`
 	Icon       *Icon       `json:"icon,omitempty"`
@@ -32,4 +35,25 @@ type ActionSet map[ActionCode]Action
 // NewActionSet builds instance of ActionSet.
 func NewActionSet() map[ActionCode]Action {
 	return map[ActionCode]Action{}
+}
+
+func (as ActionSet) Add(arr []ActionCode) {
+	if len(arr) == 0 {
+		return
+	}
+
+	for i := range arr {
+		as[arr[i]] = Action{}
+	}
+}
+
+func (dst ActionSet) AssignActionValues(src ActionSet) error {
+	for k := range dst {
+		v, ok := src[k]
+		if !ok {
+			return errors.New("unknown action code:" + string(k))
+		}
+		dst[k] = v
+	}
+	return nil
 }

@@ -9,6 +9,7 @@ package grider
 
 // Page describes a single object page.
 type Page struct {
+	ID     int     `json:"id,omitempty"`
 	Header *Header `json:"header,omitempty"`
 
 	Widgets []Widgeter `json:"widgets,omitempty"`
@@ -44,6 +45,7 @@ const (
 	MediaType     WidgetType = 2
 	MapType       WidgetType = 3
 	ChartType     WidgetType = 4
+	CustomType    WidgetType = 5
 )
 
 func (wt WidgetType) String() string {
@@ -56,6 +58,8 @@ func (wt WidgetType) String() string {
 		return "map"
 	case ChartType:
 		return "chart"
+	case CustomType:
+		return "custom"
 	}
 	return ""
 }
@@ -69,9 +73,11 @@ type Widgeter interface {
 }
 
 type Widget struct {
-	Type    WidgetType   `json:"type"`
-	Row     int          `json:"row"`
-	Col     int          `json:"col"`
+	ID   int        `json:"id,omitempty"`
+	Type WidgetType `json:"type"`
+	// Row     int          `json:"row"`
+	// Col     int          `json:"col"`
+	Width   int          `json:"width"`
 	Buttons []ActionCode `json:"buttons,omitempty"`
 }
 
@@ -139,6 +145,7 @@ type Media struct {
 
 // Line описывает одну информационную строчку
 type Line struct {
+	ID    int      `json:"id,omitempty"`
 	Icon  *Icon    `json:"icon,omitempty"`
 	Label string   `json:"label,omitempty"`
 	Value string   `json:"value,omitempty"`

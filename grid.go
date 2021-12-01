@@ -37,6 +37,8 @@ type Grid struct {
 	GridActions    []ActionCode   `json:"gridActions,omitempty"`
 	Action         ActionSet      `json:"action,omitempty"`
 	IsDownloadable bool           `json:"isDownloadable"`
+	IsFilterable   bool           `json:"isFilterable"`
+	NoPagination   bool           `json:"noPagination,omitempty"`
 	option         Option
 }
 

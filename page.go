@@ -43,9 +43,10 @@ type WidgetType int
 const (
 	AttrValueType WidgetType = 1
 	MediaType     WidgetType = 2
-	MapType       WidgetType = 3
-	ChartType     WidgetType = 4
-	CustomType    WidgetType = 5
+	GridType      WidgetType = 3
+	MapType       WidgetType = 4
+	ChartType     WidgetType = 5
+	CustomType    WidgetType = 6
 )
 
 func (wt WidgetType) String() string {
@@ -97,6 +98,15 @@ type MediaWidget struct {
 
 func (MediaWidget) WidgetType() WidgetType {
 	return MediaType
+}
+
+type GridWidget struct {
+	Widget
+	Grid *Grid `json:"grid,omitempty"`
+}
+
+func (GridWidget) WidgetType() WidgetType {
+	return GridType
 }
 
 // Header describes header of the Page or Tab.
@@ -231,6 +241,12 @@ func (p *Page) AssignActionSet(as ActionSet) error {
 			break
 		case CustomType:
 			break
+		case GridType:
+			g := p.Widgets[i].(GridWidget)
+			p.Action.Add(g.Grid.GridActions)
+			for i := range g.Grid.RowActions {
+				p.Action.Add(g.Grid.RowActions[i])
+			}
 		}
 	}
 	return p.Action.AssignActionValues(as)

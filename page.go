@@ -59,6 +59,8 @@ func (wt WidgetType) String() string {
 		return "map"
 	case ChartType:
 		return "chart"
+	case GridType:
+		return "grid"
 	case CustomType:
 		return "custom"
 	}

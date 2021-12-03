@@ -47,6 +47,7 @@ const (
 	MapType       WidgetType = 4
 	ChartType     WidgetType = 5
 	CustomType    WidgetType = 6
+	LazyType      WidgetType = 7
 )
 
 func (wt WidgetType) String() string {
@@ -63,6 +64,8 @@ func (wt WidgetType) String() string {
 		return "grid"
 	case CustomType:
 		return "custom"
+	case LazyType:
+		return "lazy"
 	}
 	return ""
 }
@@ -91,6 +94,15 @@ type AttrValueWidget struct {
 
 func (AttrValueWidget) WidgetType() WidgetType {
 	return AttrValueType
+}
+
+type LazyWidget struct {
+	Widget
+	URL string `json:"url"`
+}
+
+func (LazyWidget) WidgetType() WidgetType {
+	return LazyType
 }
 
 type MediaWidget struct {

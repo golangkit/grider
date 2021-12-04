@@ -84,11 +84,15 @@ type Widget struct {
 	// Row     int          `json:"row"`
 	// Col     int          `json:"col"`
 	Width   int          `json:"width"`
-	Actions []ActionCode `json:"actions,omitempty"`
+	Actions []ActionCode `json:"widgetActions,omitempty"`
+
+	// Action must be only filled if widget generated independent as
+	// result of request from lazy widget.
+	Action ActionSet `json:"action,omitempty"`
 }
 
 type AttrValueWidget struct {
-	Widget
+	*Widget
 	Lines []Line `json:"lines,omitempty"`
 }
 
@@ -97,7 +101,7 @@ func (AttrValueWidget) WidgetType() WidgetType {
 }
 
 type LazyWidget struct {
-	Widget
+	*Widget
 	URL string `json:"url"`
 }
 
@@ -106,7 +110,7 @@ func (LazyWidget) WidgetType() WidgetType {
 }
 
 type MediaWidget struct {
-	Widget
+	*Widget
 	Media []Media `json:"media,omitempty"`
 }
 
@@ -115,7 +119,7 @@ func (MediaWidget) WidgetType() WidgetType {
 }
 
 type GridWidget struct {
-	Widget
+	*Widget
 	Grid *Grid `json:"grid,omitempty"`
 }
 
@@ -264,4 +268,39 @@ func (p *Page) AssignActionSet(as ActionSet) error {
 		}
 	}
 	return p.Action.AssignActionValues(as)
+}
+
+func AssignActionSet(lw Widgeter, as ActionSet) error {
+	var err error
+	switch lw.WidgetType() {
+	case AttrValueType:
+		w := lw.(AttrValueWidget)
+		w.Action = NewActionSet()
+		w.Action.Add(w.Actions)
+		for j := range w.Lines {
+			w.Action.Add(w.Lines[j].Actions)
+		}
+		err = w.Action.AssignActionValues(as)
+	case MediaType:
+		w := lw.(MediaWidget)
+		w.Action = NewActionSet()
+		w.Action.Add(w.Actions)
+		err = w.Action.AssignActionValues(as)
+	case MapType:
+		break
+	case ChartType:
+		break
+	case CustomType:
+		break
+	case GridType:
+		w := lw.(GridWidget)
+		w.Action = NewActionSet()
+		w.Action.Add(w.Actions)
+		w.Action.Add(w.Grid.GridActions)
+		for i := range w.Grid.RowActions {
+			w.Action.Add(w.Grid.RowActions[i])
+		}
+		err = w.Action.AssignActionValues(as)
+	}
+	return err
 }

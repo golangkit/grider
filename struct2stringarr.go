@@ -1,7 +1,6 @@
 package grider
 
 import (
-	"fmt"
 	"reflect"
 	"regexp"
 	"strings"
@@ -19,14 +18,14 @@ func (g *Grid) ApplySliceOfStruct(src interface{}) *Grid {
 	}
 
 	if s.Len() == 0 {
-		fmt.Println("s.Len()=0")
+		//fmt.Println("s.Len()=0")
 		// if src empty we have to create empty slice element.
 		// and generate values for Columns attribute.
 		g.Columns = extractMeta(g.option.titlePrefix, "", reflect.Zero(t.Elem()), g.option.multiLang)
 		return g
 	}
 
-	fmt.Printf("s.Len()=%d\n", s.Len())
+	//fmt.Printf("s.Len()=%d\n", s.Len())
 	for i := 0; i < s.Len(); i++ {
 		row := s.Index(i)
 		if i == 0 {
@@ -241,7 +240,7 @@ func extractMeta(titlePrefix string, parentAttribute string, s reflect.Value, mu
 				continue
 			}
 		} else {
-			println("bala", sf.String())
+			//	println("bala", sf.String())
 			res = append(res, convertTagToGridColumn(titlePrefix, parentAttribute, snakeName, tag, multiLang))
 			continue
 		}

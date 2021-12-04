@@ -59,7 +59,7 @@ func formatAttribute(src reflect.Value, layout string) string {
 		if st, ok := src.Interface().(json.Marshaler); ok {
 			buf, err := st.MarshalJSON()
 			if err != nil {
-				panic(err)
+				return "?????"
 			}
 			if buf[0] == byte('"') {
 				buf = buf[1 : len(buf)-1]

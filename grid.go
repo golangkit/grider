@@ -39,6 +39,7 @@ type Grid struct {
 	IsDownloadable bool           `json:"isDownloadable"`
 	IsFilterable   bool           `json:"isFilterable"`
 	NoPagination   bool           `json:"noPagination,omitempty"`
+	PaginationType PaginationType `json:"paginationType"`
 	option         Option
 }
 
@@ -172,4 +173,28 @@ func (g *Grid) AssignActionSet(as ActionSet) error {
 	}
 
 	return g.Action.AssignActionValues(as)
+}
+
+type PaginationType int
+
+const (
+	PaginationServer  PaginationType = 0
+	PaginationClient  PaginationType = 1
+	PaginationWithout PaginationType = 2
+)
+
+func (pt PaginationType) String() string {
+	switch pt {
+	case 0:
+		return "server"
+	case 1:
+		return "client"
+	case 2:
+		return "without"
+	}
+	return ""
+}
+
+func (pt PaginationType) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + pt.String() + `"`), nil
 }

@@ -48,6 +48,7 @@ const (
 	ChartType     WidgetType = 5
 	CustomType    WidgetType = 6
 	LazyType      WidgetType = 7
+	ContentType   WidgetType = 8
 )
 
 func (wt WidgetType) String() string {
@@ -66,11 +67,37 @@ func (wt WidgetType) String() string {
 		return "custom"
 	case LazyType:
 		return "lazy"
+	case ContentType:
+		return "content"
 	}
 	return ""
 }
 
 func (wt WidgetType) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + wt.String() + `"`), nil
+}
+
+type ContentBodyType int
+
+const (
+	Text     ContentBodyType = 1
+	Html     ContentBodyType = 2
+	Markdown ContentBodyType = 3
+)
+
+func (wt ContentBodyType) String() string {
+	switch wt {
+	case Text:
+		return "text"
+	case Html:
+		return "html"
+	case Markdown:
+		return "markdown"
+	}
+	return ""
+}
+
+func (wt ContentBodyType) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + wt.String() + `"`), nil
 }
 
@@ -98,6 +125,16 @@ type AttrValueWidget struct {
 
 func (AttrValueWidget) WidgetType() WidgetType {
 	return AttrValueType
+}
+
+type ContentWidget struct {
+	*Widget
+	Type ContentBodyType `json:"type"`
+	Body string          `json:"body"`
+}
+
+func (ContentWidget) WidgetType() WidgetType {
+	return ContentType
 }
 
 type LazyWidget struct {

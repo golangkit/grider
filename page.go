@@ -329,6 +329,12 @@ func AssignActionSet(lw Widgeter, as ActionSet) error {
 		break
 	case CustomType:
 		break
+	case ContentType:
+		w := lw.(ContentWidget)
+		w.Action = NewActionSet()
+		w.Action.Add(w.Actions)
+		err = w.Action.AssignActionValues(as)
+		break
 	case GridType:
 		w := lw.(GridWidget)
 		w.Action = NewActionSet()

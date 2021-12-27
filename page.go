@@ -294,6 +294,10 @@ func (p *Page) AssignActionSet(as ActionSet) error {
 			break
 		case ChartType:
 			break
+		case ContentType:
+			w := p.Widgets[i].(ContentWidget)
+			p.Action.Add(w.Actions)
+			break
 		case CustomType:
 			break
 		case GridType:

@@ -106,8 +106,9 @@ type Widgeter interface {
 }
 
 type Widget struct {
-	ID   int        `json:"id,omitempty"`
-	Type WidgetType `json:"type"`
+	ID     int        `json:"id,omitempty"`
+	Type   WidgetType `json:"type"`
+	Header *Header    `json:"header,omitempty"`
 	// Row     int          `json:"row"`
 	// Col     int          `json:"col"`
 	Width   int          `json:"width"`
@@ -303,8 +304,8 @@ func (p *Page) AssignActionSet(as ActionSet) error {
 		case GridType:
 			g := p.Widgets[i].(GridWidget)
 			p.Action.Add(g.Grid.GridActions)
-			for i := range g.Grid.RowActions {
-				p.Action.Add(g.Grid.RowActions[i])
+			for j := range g.Grid.RowActions {
+				p.Action.Add(g.Grid.RowActions[j])
 			}
 		}
 	}

@@ -115,7 +115,7 @@ func (r *Grid) Excelize(fname string) (*DownloadResponse, error) {
 					}
 					for j := range ph {
 						if ph[j].locateToColumn == -1 {
-							fmt.Println("not found %#v\n", ph[j])
+							fmt.Printf("not found %#v\n", ph[j])
 							continue
 						}
 						href = strings.Replace(href, ph[j].text, r.Rows[row][ph[j].locateToColumn], -1)

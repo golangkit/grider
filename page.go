@@ -276,40 +276,49 @@ type SuggestionType struct {
 // type Footer struct {
 // 	Media []Media `json:"media,omitempty"`
 // }
-
-func (p *Page) AssignActionSet(as ActionSet) error {
+func (p *Page) AssignActionSet(supported ActionSet) error {
 	p.Action = NewActionSet()
 	p.Action.Add(p.PageActions)
-	for i := range p.Widgets {
-		switch p.Widgets[i].WidgetType() {
+	for i := range p.Tabs {
+		p.Action.Add(p.Tabs[i].TabActions)
+		p.assignActionCode(p.Tabs[i].Widgets)
+	}
+
+	p.assignActionCode(p.Widgets)
+
+	return p.Action.AssignActionValues(supported)
+}
+
+func (p *Page) assignActionCode(ws []Widgeter) {
+	for i := range ws {
+		switch ws[i].WidgetType() {
 		case AttrValueType:
-			w := p.Widgets[i].(AttrValueWidget)
+			w := ws[i].(AttrValueWidget)
 			p.Action.Add(w.Actions)
 			for j := range w.Lines {
 				p.Action.Add(w.Lines[j].Actions)
 			}
 		case MediaType:
-			w := p.Widgets[i].(MediaWidget)
+			w := ws[i].(MediaWidget)
 			p.Action.Add(w.Actions)
 		case MapType:
 			break
 		case ChartType:
 			break
 		case ContentType:
-			w := p.Widgets[i].(ContentWidget)
+			w := ws[i].(ContentWidget)
 			p.Action.Add(w.Actions)
 			break
 		case CustomType:
 			break
 		case GridType:
-			g := p.Widgets[i].(GridWidget)
+			g := ws[i].(GridWidget)
 			p.Action.Add(g.Grid.GridActions)
 			for j := range g.Grid.RowActions {
 				p.Action.Add(g.Grid.RowActions[j])
 			}
 		}
 	}
-	return p.Action.AssignActionValues(as)
 }
 
 func AssignActionSet(lw Widgeter, as ActionSet) error {

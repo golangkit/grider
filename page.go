@@ -117,6 +117,10 @@ type Widget struct {
 	// Action must be only filled if widget generated independent as
 	// result of request from lazy widget.
 	Action ActionSet `json:"action,omitempty"`
+
+	// Object is an object in JSON. The object can be consumed
+	// by customized UI logic. As instance: take data to init modal window.
+	Object interface{} `json:"object,omitempty"`
 }
 
 type AttrValueWidget struct {

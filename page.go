@@ -49,6 +49,7 @@ const (
 	CustomType    WidgetType = 6
 	LazyType      WidgetType = 7
 	ContentType   WidgetType = 8
+	EmptyType     WidgetType = 9
 )
 
 func (wt WidgetType) String() string {
@@ -69,6 +70,8 @@ func (wt WidgetType) String() string {
 		return "lazy"
 	case ContentType:
 		return "content"
+	case EmptyType:
+		return "empty"
 	}
 	return ""
 }
@@ -130,6 +133,14 @@ type AttrValueWidget struct {
 
 func (AttrValueWidget) WidgetType() WidgetType {
 	return AttrValueType
+}
+
+type EmptyWidget struct {
+	*Widget
+}
+
+func (EmptyWidget) WidgetType() WidgetType {
+	return EmptyType
 }
 
 type ContentWidget struct {

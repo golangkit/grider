@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 // FieldTagLabel holds struct field tag key.
@@ -33,6 +35,7 @@ type Grid struct {
 	Rows           [][]string     `json:"rows"`
 	RowObjects     []interface{}  `json:"rowObjects,omitempty"`
 	RowIDs         []int          `json:"rowIds,omitempty"`
+	RowUIDs        []uuid.UUID    `json:"rowUids,omitempty"`
 	RowActions     [][]ActionCode `json:"rowActions,omitempty"`
 	GridActions    []ActionCode   `json:"gridActions,omitempty"`
 	Action         ActionSet      `json:"action,omitempty"`

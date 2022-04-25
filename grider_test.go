@@ -3,7 +3,7 @@ package grider_test
 import (
 	"testing"
 
-	"github.com/axkit/grider"
+	"github.com/golangkit/grider"
 )
 
 func TestNewPage(t *testing.T) {
